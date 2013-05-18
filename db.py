@@ -1,42 +1,39 @@
-import sqlite3
 
 class Db:
-	def __init__(self, name):
-		self.name = name
-		self.conn = sqlite3.connect(name + '.db')
-		c = self.conn.cursor()
-		c.execute('CREATE TABLE IF NOT EXISTS words (word, next_word, count)')
-		c.execute('CREATE INDEX IF NOT EXISTS i_word ON words (word,next_word)')
+	def __init__(self, depth, conn, sql):
+		self.depth  = depth
+		self.conn   = conn 
+		self.cursor = conn.cursor()
+		self.sql    = sql
 
-	def get_word_pair_count(self, word, next_word):
-		c = self.conn.cursor()
-		c.execute('select count from words where word=? and next_word=?' , (word, next_word))
-		r = c.fetchone()
+		self.cursor.execute(self.sql.create_table_sql())
+		self.cursor.execute(self.sql.create_index_sql())
+
+	def _get_word_list_count(self, word_list):
+		if len(word_list) != self.depth:
+			raise ValueError('Expected %s words in list but found %s' % (self.depth, len(word_list)))
+
+		self.cursor.execute(self.sql.select_count_for_words_sql(), word_list)
+		r = self.cursor.fetchone()
 		if r:
 			return r[0]
 		else:
 			return 0
 
-	def add_word(self, word, next_word):
-		count = self.get_word_pair_count(word, next_word)
-		c = self.conn.cursor()
+	def add_word(self, word_list):
+		count = self._get_word_list_count(word_list)
 		if count:
-			c.execute('UPDATE words SET count=? WHERE word=? AND next_word=?', (count + 1, word, next_word))
+			self.cursor.execute(self.sql.update_count_for_words_sql(), [count + 1] + word_list)
 		else:
-			c.execute('INSERT INTO words (word, next_word, count) VALUES (?,?,?)', (word, next_word, 1))
+			self.cursor.execute(self.sql.insert_row_for_words_sql(), word_list + [1])
 
 	def commit(self):
 		self.conn.commit()
 
-	def get_word_count(self, word):
-		c = self.conn.cursor()
+	def get_word_count(self, word_list):
 		counts = {}
-		for row in c.execute('SELECT next_word, count FROM words WHERE word=?', (word,)):
+		sql = self.sql.select_words_and_counts_sql()
+		for row in self.cursor.execute(sql, word_list):
 			counts[row[0]] = row[1]
 
 		return counts
-
-	def reset(self):
-		c = self.conn.cursor()
-		c.execute('delete from words')
-		self.conn.commit()

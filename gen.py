@@ -1,16 +1,15 @@
-import sqlite3
 from parse import Parser
-from random import randint
 
 class Generator:
-	def __init__(self, name, db):
+	def __init__(self, name, db, rnd):
 		self.name = name
-		self.db = db
+		self.db   = db
+		self.rnd  = rnd
 
-	def get_next_word(self, word):
-		candidate_words = self.db.get_word_count(word)
+	def _get_next_word(self, word_list):
+		candidate_words = self.db.get_word_count(word_list)
 		total_next_words = sum(candidate_words.values())
-		i = randint(1, total_next_words)
+		i = self.rnd.randint(total_next_words)
 		t=0
 		for w in candidate_words.keys():
 			t += candidate_words[w]
@@ -18,16 +17,15 @@ class Generator:
 				return w
 		assert False
 
-	def make_sentence(self):
-		word = self.get_next_word(Parser.SENTENCE_START_SYMBOL)
-		sentence = []
+	def generate(self, depth, word_separator):
+		sentence = [Parser.SENTENCE_START_SYMBOL] * (depth - 1)
+		end_symbol = [Parser.SENTENCE_END_SYMBOL] * (depth - 1)
 
-		while word != Parser.SENTENCE_END_SYMBOL:
+		while True:
+			tail = sentence[(-depth+1):]
+			if tail == end_symbol:
+				break
+			word = self._get_next_word(tail)
 			sentence.append(word)
-			word = self.get_next_word(word)
-
-		return ' '.join(sentence)
-
-	def generate(self, count):
-		for i in range(0, count):
-			print self.make_sentence()
+		
+		return word_separator.join(sentence[depth-1:][:1-depth])
