@@ -19,7 +19,7 @@ class GenTest(unittest.TestCase):
         
         self.rnd.vals = [1, 2, 2, 1, 4, 1, 1]
         
-        self.assertEqual(Generator('name', self.db, self.rnd).generate(2, ' '), 'the cat sat on the mat')
+        self.assertEqual(Generator('name', self.db, self.rnd).generate(' '), 'the cat sat on the mat')
         self.assertEqual(self.db.get_word_count_args, [['^'], ['the'], ['cat'], ['sat'], ['on'], ['the'], ['mat']])
         self.assertEqual(self.rnd.maxints, [3, 2, 2, 5, 4, 2, 1])
     
@@ -27,7 +27,11 @@ class StubDb:
     def __init__(self):
         self.count_values = []
         self.get_word_count_args = []
+        self.depth = 2
         
+    def get_depth(self):
+        return self.depth
+    
     def get_word_count(self, word_list):   
         self.get_word_count_args.append(word_list)     
         return self.count_values.pop(0)

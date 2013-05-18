@@ -1,4 +1,5 @@
 import sys
+import re
 
 class Parser:
 	SENTENCE_START_SYMBOL = '^'
@@ -9,12 +10,16 @@ class Parser:
 		self.db   = db
 		self.sentence_split_char = sentence_split_char
 		self.word_split_char = word_split_char
+		self.whitespace_regex = re.compile('\s+')
 
-	def parse(self, depth, txt):
+	def parse(self, txt):
+		depth = self.db.get_depth()
 		sentences = txt.split(self.sentence_split_char)
 		i = 0
 
 		for sentence in sentences:
+			sentence = self.whitespace_regex.sub(" ", sentence).strip()
+
 			list_of_words = None
 			if self.word_split_char:
 				list_of_words = sentence.split(self.word_split_char)
