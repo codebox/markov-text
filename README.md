@@ -16,7 +16,7 @@ The results are often just nonsense, but at times can be strangely poetic - the 
 
 <section>To use the utility, first find a source document (the larger the better) and save it as a UTF-8 encoded text file. Executing the utility in 'parse' mode, as shown, will create a .db file containing information about how frequently words follow other words in the text file.
 
-<pre>python markov.py parse <name> <depth> <file>
+<pre>python markov.py parse &lt;name&gt; &lt;depth&gt; &lt;file&gt;
 </pre>
 
 *   The `name` argument can be any non-empty value - this is just the name you have chosen for the source document
@@ -34,7 +34,7 @@ The parsing process may take a while to complete, depending on the size of the i
 
 <section>To generate new sentences, run the utility in 'generate' mode, using the name specified during the parse operation
 
-<pre>python markov.py gen <name> <count>
+<pre>python markov.py gen &lt;name&gt; &lt;count&gt;
 </pre>
 
 *   The `name` argument should match the name used with the earlier `parse` command
