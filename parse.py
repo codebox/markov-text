@@ -31,10 +31,10 @@ class Parser:
 			for n in range(0, len(words) - depth + 1):
 				self.db.add_word(words[n:n+depth])
 
-			self.db.commit()
 			i += 1
 			if i % 1000 == 0:
 				print i
 				sys.stdout.flush()
 
+		self.db.commit()
 

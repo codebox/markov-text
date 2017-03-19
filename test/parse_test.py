@@ -7,7 +7,7 @@ class ParserTest(unittest.TestCase):
         
     def test_db_updated_correctly_from_input_with_depth_2_and_extra_whitespace(self):
         Parser('name', self.db, '\n', ' ').parse(' the   cat  sat  on the  mat \n good    cat ')
-        self.assertEqual(self.db.commit_count, 2)
+        self.assertEqual(self.db.commit_count, 1)
         self.assertEqual(self.db.added_word_list, [['^', 'the'], ['the', 'cat'], ['cat', 'sat'], ['sat', 'on'], ['on', 'the'], ['the', 'mat'], ['mat', '$'], ['^', 'good'], ['good', 'cat'], ['cat', '$']])
         
     def test_db_updated_correctly_from_input_with_depth_4(self):
