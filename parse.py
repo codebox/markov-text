@@ -33,7 +33,7 @@ class Parser:
 
 			i += 1
 			if i % 1000 == 0:
-				print i
+				print(i)
 				sys.stdout.flush()
 
 		self.db.commit()
